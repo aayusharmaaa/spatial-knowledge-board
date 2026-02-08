@@ -4,7 +4,7 @@ A **space-themed spatial knowledge board** that organizes your notes, screenshot
 
 ![ThoughtSpace](https://img.shields.io/badge/React-18-61DAFB?logo=react) ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript) ![Tailwind](https://img.shields.io/badge/Tailwind-3-06B6D4?logo=tailwindcss) ![Vite](https://img.shields.io/badge/Vite-5-646CFF?logo=vite)
 
-![Dashboard]<img width="1919" height="911" alt="image" src="https://github.com/user-attachments/assets/fc630f28-ecc8-4b55-93f9-b49e8b0b6349" />
+<img width="1919" height="911" alt="image" src="https://github.com/user-attachments/assets/fc630f28-ecc8-4b55-93f9-b49e8b0b6349" />
 
 
 ---
