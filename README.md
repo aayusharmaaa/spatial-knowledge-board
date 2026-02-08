@@ -4,6 +4,9 @@ A **space-themed spatial knowledge board** that organizes your notes, screenshot
 
 ![ThoughtSpace](https://img.shields.io/badge/React-18-61DAFB?logo=react) ![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript) ![Tailwind](https://img.shields.io/badge/Tailwind-3-06B6D4?logo=tailwindcss) ![Vite](https://img.shields.io/badge/Vite-5-646CFF?logo=vite)
 
+![Dashboard]<img width="1919" height="911" alt="image" src="https://github.com/user-attachments/assets/fc630f28-ecc8-4b55-93f9-b49e8b0b6349" />
+
+
 ---
 
 ## ✨ Features
@@ -175,23 +178,6 @@ AI features include:
 - **Smart categorization** — Automatically assigns pillar, category, tags, title, and summary to uploaded files
 - **AI Chat** — Context-aware assistant that knows about all your notes
 - Your key is stored in `localStorage` and only sent to OpenAI's API
-
----
-
-## 🖱️ Interactions
-
-| Action | Effect |
-|---|---|
-| Click a planet orb | Warp into that pillar's notes |
-| ← All Pillars button | Return to overview |
-| Category chips | Filter notes by category |
-| Click a note card | Open full note viewer |
-| 📎 Upload button | Open file upload dialog |
-| 📸 Screenshots button | Open screenshot map |
-| 🤖 Chat bubble | Open AI assistant |
-| Search bar | Search across all notes |
-| Minimap planets | Quick-jump to any pillar |
-| Esc | Close modals / go back |
 
 ---
 
