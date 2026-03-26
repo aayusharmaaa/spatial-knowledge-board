@@ -129,6 +129,15 @@ export function NoteViewer({ note, onClose }: NoteViewerProps) {
 
         {/* Content */}
         <div style={{ padding: '24px 28px' }}>
+          {note.imageUrl && (
+            <div style={{ marginBottom: '24px', borderRadius: '12px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)' }}>
+              <img 
+                src={note.imageUrl} 
+                alt={note.title} 
+                style={{ width: '100%', display: 'block', maxHeight: '400px', objectFit: 'cover' }} 
+              />
+            </div>
+          )}
           <p
             style={{
               color: 'rgba(226, 232, 240, 0.85)',

@@ -164,7 +164,6 @@ export function SpatialCanvas() {
           <line x1="30%" y1="50%" x2="70%" y2="50%" stroke="rgba(255,255,255,0.02)" strokeWidth="1" strokeDasharray="2 12" />
         </svg>
 
-        {/* 3 planet orbs */}
         <div
           style={{
             display: 'flex',
@@ -175,6 +174,8 @@ export function SpatialCanvas() {
             padding: '40px',
             position: 'relative',
             zIndex: 2,
+            perspective: '1200px',
+            transformStyle: 'preserve-3d',
           }}
         >
           {(['health', 'wealth', 'wisdom'] as Pillar[]).map((pillar, idx) => (
@@ -299,17 +300,18 @@ export function SpatialCanvas() {
         {/* Mood board grid of notes */}
         <div
           className="relative flex-1 overflow-y-auto px-6 pb-20"
-          style={{ scrollBehavior: 'smooth', zIndex: 5 }}
+          style={{ scrollBehavior: 'smooth', zIndex: 5, perspective: '1200px' }}
         >
           <div
             style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
               gridAutoRows: '10px',
-              gap: '14px',
+              gap: '16px',
               maxWidth: '1500px',
               margin: '0 auto',
-              padding: '20px 0',
+              padding: '30px 0',
+              transformStyle: 'preserve-3d',
             }}
           >
             {pillarNotes.map((note, i) => (
@@ -407,52 +409,84 @@ function PlanetOrb({
           />
         </div>
 
-        {/* Planet body */}
+        {/* Planet Container (handles float, hover, and shadow) */}
         <div
           style={{
             width: '100%',
             height: '100%',
             borderRadius: '50%',
-            background: `radial-gradient(circle at 35% 30%, ${color.primary}35, ${color.secondary}15 60%, ${color.primary}08 100%)`,
-            border: `1.5px solid ${color.primary}25`,
+            position: 'relative',
+            overflow: 'hidden',
+            border: `1px solid ${color.primary}30`,
+            transition: 'transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.5s ease',
+            boxShadow: `
+              0 20px 50px rgba(0,0,0,0.6),
+              0 0 80px ${color.primary}15,
+              inset 0 0 40px ${color.primary}20,
+              inset -20px -20px 60px rgba(0,0,0,0.6)
+            `,
+            animation: `float 6s ease-in-out ${idx * 0.8}s infinite`,
+            transform: 'translateZ(0px) scale(1)',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'translateZ(60px) scale(1.1)';
+            e.currentTarget.style.boxShadow = `
+              0 40px 80px rgba(0,0,0,0.8),
+              0 0 120px ${color.primary}30,
+              inset 0 0 50px ${color.primary}25,
+              inset -20px -20px 60px rgba(0,0,0,0.7)
+            `;
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'translateZ(0px) scale(1)';
+            e.currentTarget.style.boxShadow = `
+              0 20px 50px rgba(0,0,0,0.6),
+              0 0 80px ${color.primary}15,
+              inset 0 0 40px ${color.primary}20,
+              inset -20px -20px 60px rgba(0,0,0,0.6)
+            `;
+          }}
+        >
+          {/* Spinning Energy Core */}
+          <div
+            style={{
+              position: 'absolute',
+              inset: '-50%', // Extra large to prevent edge clipping during rotation
+              background: `conic-gradient(from 0deg at 50% 50%, ${color.primary}15 0deg, ${color.secondary}45 120deg, ${color.primary}10 240deg, ${color.primary}15 360deg)`,
+              animation: `orbit ${12 + (idx % 3) * 4}s linear infinite`,
+              zIndex: 0,
+            }}
+          />
+          {/* Static Core Highlight */}
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              background: `radial-gradient(circle at 35% 30%, ${color.primary}50, transparent 70%)`,
+              zIndex: 1,
+            }}
+          />
+
+          {/* Static Content Overlay */}
+          <div style={{
+            position: 'absolute',
+            inset: 0,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            transition: 'transform 0.4s ease, box-shadow 0.4s ease',
-            boxShadow: `
-              0 0 40px ${color.primary}15,
-              0 0 80px ${color.primary}08,
-              inset 0 0 30px ${color.primary}10
-            `,
-            animation: `float 6s ease-in-out ${idx * 0.8}s infinite`,
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'scale(1.1)';
-            e.currentTarget.style.boxShadow = `
-              0 0 60px ${color.primary}30,
-              0 0 120px ${color.primary}15,
-              inset 0 0 40px ${color.primary}15
-            `;
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'scale(1)';
-            e.currentTarget.style.boxShadow = `
-              0 0 40px ${color.primary}15,
-              0 0 80px ${color.primary}08,
-              inset 0 0 30px ${color.primary}10
-            `;
-          }}
-        >
-          <span style={{ fontSize: '36px', marginBottom: '4px', filter: 'drop-shadow(0 0 8px rgba(255,255,255,0.3))' }}>
-            {data.emoji}
-          </span>
-          <span style={{ fontSize: '16px', fontWeight: 700, color: '#f1f5f9', letterSpacing: '0.5px' }}>
-            {data.name}
-          </span>
-          <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.45)', marginTop: '3px' }}>
-            {count} notes
-          </span>
+            zIndex: 2,
+          }}>
+            <span style={{ fontSize: '36px', marginBottom: '4px', filter: 'drop-shadow(0 0 8px rgba(255,255,255,0.3))' }}>
+              {data.emoji}
+            </span>
+            <span style={{ fontSize: '16px', fontWeight: 700, color: '#f1f5f9', letterSpacing: '0.5px' }}>
+              {data.name}
+            </span>
+            <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.45)', marginTop: '3px' }}>
+              {count} notes
+            </span>
+          </div>
         </div>
       </div>
     </button>
@@ -506,32 +540,32 @@ function SpaceNoteCard({
       style={{
         gridRow: `span ${variant.rowSpan}`,
         background: variant.featured
-          ? `linear-gradient(160deg, rgba(15,23,42,0.7), ${pillarColor}08)`
-          : 'rgba(15, 23, 42, 0.55)',
-        backdropFilter: 'blur(12px)',
-        border: '1px solid rgba(255,255,255,0.06)',
+          ? `linear-gradient(160deg, rgba(15,23,42,0.8), ${pillarColor}12)`
+          : 'rgba(15, 23, 42, 0.65)',
+        backdropFilter: 'blur(16px)',
+        border: '1px solid rgba(255,255,255,0.08)',
         borderRadius: '16px',
         padding: variant.featured ? '20px 20px' : '14px 16px',
-        borderLeft: `3px solid ${pillarColor}40`,
-        boxShadow: `0 2px 12px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.03)`,
+        borderLeft: `3px solid ${pillarColor}50`,
+        boxShadow: `0 4px 16px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.1)`,
         cursor: 'pointer',
-        transition: 'transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease',
-        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-        animation: `fadeInUp 0.35s ease ${Math.min(index * 0.035, 0.7)}s both`,
-        transform: `rotate(${rot}deg)`,
+        transition: 'transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s ease, border-color 0.4s ease',
+        fontFamily: 'Outfit, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+        animation: `fadeScaleUp 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) ${Math.min(index * 0.035, 0.7)}s both`,
+        transform: `rotate(${rot}deg) translateZ(0px)`,
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.transform = 'rotate(0deg) translateY(-5px) scale(1.03)';
-        e.currentTarget.style.boxShadow = `0 16px 40px rgba(0,0,0,0.45), 0 0 24px ${pillarColor}12, inset 0 1px 0 rgba(255,255,255,0.06)`;
+        e.currentTarget.style.transform = `rotate(0deg) translateY(-8px) scale(1.05) translateZ(40px)`;
+        e.currentTarget.style.boxShadow = `0 30px 60px rgba(0,0,0,0.6), 0 0 30px ${pillarColor}30, inset 0 1px 2px rgba(255,255,255,0.2)`;
         e.currentTarget.style.borderLeftColor = pillarColor;
         e.currentTarget.style.zIndex = '10';
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.transform = `rotate(${rot}deg)`;
-        e.currentTarget.style.boxShadow = `0 2px 12px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.03)`;
+        e.currentTarget.style.transform = `rotate(${rot}deg) translateZ(0px)`;
+        e.currentTarget.style.boxShadow = `0 4px 16px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.1)`;
         e.currentTarget.style.borderLeftColor = `${pillarColor}40`;
         e.currentTarget.style.zIndex = '1';
       }}

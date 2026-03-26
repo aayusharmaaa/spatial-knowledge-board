@@ -13,7 +13,7 @@ import type { ChatMessage } from '@/services/llm';
 import type { Pillar } from '@/types';
 
 export function Chatbot() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -38,7 +38,6 @@ export function Chatbot() {
   // Quick actions that navigate
   const handleQuickAction = useCallback((pillar: Pillar) => {
     setActiveView(pillar);
-    setIsOpen(false);
   }, [setActiveView]);
 
   // Send message
@@ -84,9 +83,6 @@ export function Chatbot() {
       e.preventDefault();
       sendMessage();
     }
-    if (e.key === 'Escape') {
-      setIsOpen(false);
-    }
   };
 
   // Pillar stats
@@ -95,17 +91,17 @@ export function Chatbot() {
 
   return (
     <>
-      {/* Floating chat button */}
+      {/* Floating Trigger Button (Visible when closed) */}
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
           style={{
             position: 'fixed',
-            bottom: '56px',
+            bottom: '24px',
             right: '24px',
-            zIndex: 50,
-            width: '48px',
-            height: '48px',
+            zIndex: 80,
+            width: '56px',
+            height: '56px',
             borderRadius: '50%',
             background: 'linear-gradient(135deg, #8b5cf6, #6366f1)',
             border: 'none',
@@ -113,248 +109,249 @@ export function Chatbot() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontSize: '22px',
-            boxShadow: '0 4px 20px rgba(139,92,246,0.3), 0 0 40px rgba(139,92,246,0.1)',
-            transition: 'transform 0.2s, box-shadow 0.2s',
-            animation: 'float 3s ease-in-out infinite',
+            fontSize: '24px',
+            boxShadow: '0 8px 32px rgba(139,92,246,0.4), 0 0 20px rgba(139,92,246,0.2)',
+            transition: 'all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)',
+            animation: 'fadeInUp 0.4s ease both',
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'scale(1.1)';
-            e.currentTarget.style.boxShadow = '0 6px 28px rgba(139,92,246,0.4), 0 0 60px rgba(139,92,246,0.15)';
+            e.currentTarget.style.transform = 'scale(1.1) translateY(-4px)';
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'scale(1)';
-            e.currentTarget.style.boxShadow = '0 4px 20px rgba(139,92,246,0.3), 0 0 40px rgba(139,92,246,0.1)';
+            e.currentTarget.style.transform = 'scale(1) translateY(0)';
           }}
-          title="ThoughtSpace AI Chat"
         >
           🤖
         </button>
       )}
 
-      {/* Chat panel */}
+      {/* Permanent Side Chat Panel (Minimizable) */}
       {isOpen && (
         <div
           style={{
             position: 'fixed',
-            bottom: '20px',
-            right: '20px',
-            zIndex: 55,
-            width: '380px',
-            maxHeight: '560px',
+            right: '24px',
+            top: '80px',
+            bottom: '80px',
+            zIndex: 70,
+            width: '340px',
             borderRadius: '20px',
-            background: 'rgba(8, 12, 24, 0.95)',
-            backdropFilter: 'blur(20px)',
+            background: 'rgba(8, 12, 24, 0.75)',
+            backdropFilter: 'blur(24px)',
             border: '1px solid rgba(255,255,255,0.08)',
-            boxShadow: '0 16px 60px rgba(0,0,0,0.5), 0 0 40px rgba(139,92,246,0.05)',
+            boxShadow: '0 16px 60px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.05)',
             display: 'flex',
             flexDirection: 'column',
             overflow: 'hidden',
-            animation: 'slideUp 0.3s ease',
+            animation: 'slideUp 0.3s ease both',
           }}
         >
-          {/* Header */}
-          <div
-            style={{
-              padding: '14px 18px',
-              borderBottom: '1px solid rgba(255,255,255,0.06)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              background: 'rgba(139,92,246,0.04)',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ fontSize: '18px' }}>🤖</span>
-              <div>
-                <span style={{ fontSize: '14px', fontWeight: 700, color: '#f1f5f9' }}>
-                  ThoughtSpace AI
-                </span>
-                <span style={{
-                  fontSize: '9px',
-                  padding: '1px 6px',
-                  borderRadius: '4px',
-                  background: hasApiKey() ? 'rgba(16,185,129,0.15)' : 'rgba(245,158,11,0.15)',
-                  color: hasApiKey() ? '#10b981' : '#f59e0b',
-                  marginLeft: '6px',
-                  fontWeight: 600,
-                }}>
-                  {hasApiKey() ? 'Online' : 'Offline'}
-                </span>
-              </div>
-            </div>
-            <button
-              onClick={() => setIsOpen(false)}
-              style={{
-                background: 'none', border: 'none', color: 'rgba(255,255,255,0.3)',
-                cursor: 'pointer', fontSize: '16px', padding: '4px 6px', borderRadius: '6px',
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.color = '#fff'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.3)'; }}
-            >
-              ✕
-            </button>
-          </div>
-
-          {/* Messages */}
-          <div
-            style={{
-              flex: 1,
-              overflowY: 'auto',
-              padding: '14px',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '10px',
-              minHeight: '200px',
-              maxHeight: '380px',
-            }}
-          >
-            {messages.length === 0 && (
-              <div style={{ textAlign: 'center', padding: '20px 10px' }}>
-                <div style={{ fontSize: '36px', opacity: 0.5, marginBottom: '10px' }}>🧠</div>
-                <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', margin: '0 0 4px', fontWeight: 500 }}>
-                  How can I help you?
-                </p>
-                <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.25)', margin: '0 0 16px' }}>
-                  {hasApiKey()
-                    ? 'Ask me about your notes, organization, or anything!'
-                    : 'Add an API key in Settings for AI-powered chat. Offline search is available.'}
-                </p>
-
-                {/* Quick action chips */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.2)', margin: '0 0 4px', letterSpacing: '0.5px', fontWeight: 600 }}>
-                    QUICK ACTIONS
-                  </p>
-                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', justifyContent: 'center' }}>
-                    {(['health', 'wealth', 'wisdom'] as Pillar[]).map((p) => (
-                      <button
-                        key={p}
-                        onClick={() => handleQuickAction(p)}
-                        style={{
-                          padding: '5px 10px', borderRadius: '8px', fontSize: '11px',
-                          border: `1px solid ${PILLAR_COLORS[p].primary}30`,
-                          background: `${PILLAR_COLORS[p].primary}08`,
-                          color: PILLAR_COLORS[p].primary,
-                          cursor: 'pointer', fontWeight: 500,
-                        }}
-                      >
-                        {PILLARS[p].emoji} {PILLARS[p].name} ({pillarCounts[p]})
-                      </button>
-                    ))}
-                  </div>
-                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', justifyContent: 'center', marginTop: '4px' }}>
-                    {[
-                      'What are my recent notes?',
-                      'Suggest connections',
-                      'What am I focusing on?',
-                    ].map((q) => (
-                      <button
-                        key={q}
-                        onClick={() => { setInput(q); setTimeout(sendMessage, 50); }}
-                        style={{
-                          padding: '5px 10px', borderRadius: '8px', fontSize: '10px',
-                          border: '1px solid rgba(255,255,255,0.06)',
-                          background: 'rgba(255,255,255,0.03)',
-                          color: 'rgba(255,255,255,0.4)',
-                          cursor: 'pointer',
-                        }}
-                      >
-                        {q}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {messages.map((msg, i) => (
-              <MessageBubble key={i} message={msg} />
-            ))}
-
-            {isLoading && (
-              <div style={{
-                display: 'flex', gap: '6px', alignItems: 'center',
-                padding: '10px 14px', borderRadius: '14px 14px 14px 4px',
-                background: 'rgba(255,255,255,0.03)',
-                alignSelf: 'flex-start', maxWidth: '85%',
+        {/* Header */}
+        <div
+          style={{
+            padding: '14px 18px',
+            borderBottom: '1px solid rgba(255,255,255,0.06)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            background: 'rgba(139,92,246,0.04)',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ fontSize: '18px' }}>🤖</span>
+            <div>
+              <span style={{ fontSize: '14px', fontWeight: 700, color: '#f1f5f9' }}>
+                ThoughtSpace AI
+              </span>
+              <span style={{
+                fontSize: '9px',
+                padding: '1px 6px',
+                borderRadius: '4px',
+                background: hasApiKey() ? 'rgba(16,185,129,0.15)' : 'rgba(245,158,11,0.15)',
+                color: hasApiKey() ? '#10b981' : '#f59e0b',
+                marginLeft: '6px',
+                fontWeight: 600,
               }}>
-                <span style={{ animation: 'pulse-glow 1.5s ease-in-out infinite', fontSize: '14px' }}>🤖</span>
-                <div style={{ display: 'flex', gap: '4px' }}>
-                  {[0, 1, 2].map((d) => (
-                    <span
-                      key={d}
+                {hasApiKey() ? 'Online' : 'Offline'}
+              </span>
+            </div>
+          </div>
+          <button
+            onClick={() => setIsOpen(false)}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: 'rgba(255,255,255,0.3)',
+              cursor: 'pointer',
+              fontSize: '18px',
+              padding: '6px',
+              marginRight: '-4px',
+              transition: 'color 0.2s',
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = '#fff'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = 'rgba(255,255,255,0.3)'; }}
+          >
+            ✕
+          </button>
+        </div>
+
+        {/* Messages */}
+        <div
+          style={{
+            flex: 1,
+            overflowY: 'auto',
+            padding: '14px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '10px',
+          }}
+        >
+          {messages.length === 0 && (
+            <div style={{ textAlign: 'center', padding: '20px 10px' }}>
+              <div style={{ fontSize: '36px', opacity: 0.5, marginBottom: '10px' }}>🧠</div>
+              <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', margin: '0 0 4px', fontWeight: 500 }}>
+                How can I help you?
+              </p>
+              <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.25)', margin: '0 0 16px' }}>
+                {hasApiKey()
+                  ? 'Ask me about your notes, organization, or anything!'
+                  : 'Add an API key in Settings for AI-powered chat. Offline search is available.'}
+              </p>
+
+              {/* Quick action chips */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.2)', margin: '0 0 4px', letterSpacing: '0.5px', fontWeight: 600 }}>
+                  QUICK ACTIONS
+                </p>
+                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                  {(['health', 'wealth', 'wisdom'] as Pillar[]).map((p) => (
+                    <button
+                      key={p}
+                      onClick={() => handleQuickAction(p)}
                       style={{
-                        width: '5px', height: '5px', borderRadius: '50%',
-                        background: 'rgba(139,92,246,0.5)',
-                        animation: `pulse-glow 1s ease-in-out ${d * 0.2}s infinite`,
+                        padding: '5px 10px', borderRadius: '8px', fontSize: '11px',
+                        border: `1px solid ${PILLAR_COLORS[p].primary}30`,
+                        background: `${PILLAR_COLORS[p].primary}08`,
+                        color: PILLAR_COLORS[p].primary,
+                        cursor: 'pointer', fontWeight: 500,
                       }}
-                    />
+                    >
+                      {PILLARS[p].emoji} {PILLARS[p].name} ({pillarCounts[p]})
+                    </button>
+                  ))}
+                </div>
+                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', justifyContent: 'center', marginTop: '4px' }}>
+                  {[
+                    'What are my recent notes?',
+                    'Suggest connections',
+                    'What am I focusing on?',
+                  ].map((q) => (
+                    <button
+                      key={q}
+                      onClick={() => { setInput(q); setTimeout(sendMessage, 50); }}
+                      style={{
+                        padding: '5px 10px', borderRadius: '8px', fontSize: '10px',
+                        border: '1px solid rgba(255,255,255,0.06)',
+                        background: 'rgba(255,255,255,0.03)',
+                        color: 'rgba(255,255,255,0.4)',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      {q}
+                    </button>
                   ))}
                 </div>
               </div>
-            )}
-
-            <div ref={messagesEndRef} />
-          </div>
-
-          {/* Input */}
-          <div
-            style={{
-              padding: '12px 14px',
-              borderTop: '1px solid rgba(255,255,255,0.06)',
-              display: 'flex',
-              gap: '8px',
-              alignItems: 'center',
-            }}
-          >
-            <input
-              ref={inputRef}
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder={hasApiKey() ? 'Ask about your notes...' : 'Search your notes...'}
-              disabled={isLoading}
-              style={{
-                flex: 1,
-                padding: '10px 14px',
-                borderRadius: '12px',
-                border: '1px solid rgba(255,255,255,0.08)',
-                background: 'rgba(255,255,255,0.04)',
-                color: '#e2e8f0',
-                fontSize: '13px',
-                outline: 'none',
-              }}
-            />
-            <button
-              onClick={sendMessage}
-              disabled={isLoading || !input.trim()}
-              style={{
-                width: '36px', height: '36px', borderRadius: '10px',
-                border: 'none',
-                background: input.trim() ? '#8b5cf6' : 'rgba(255,255,255,0.05)',
-                color: input.trim() ? '#fff' : 'rgba(255,255,255,0.2)',
-                cursor: input.trim() ? 'pointer' : 'default',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: '16px', flexShrink: 0,
-                transition: 'all 0.15s',
-              }}
-            >
-              ↑
-            </button>
-          </div>
-
-          {error && (
-            <div style={{
-              padding: '6px 14px', fontSize: '10px', color: '#ef4444',
-              background: 'rgba(239,68,68,0.05)', borderTop: '1px solid rgba(239,68,68,0.1)',
-            }}>
-              {error}
             </div>
           )}
+
+          {messages.map((msg, i) => (
+            <MessageBubble key={i} message={msg} />
+          ))}
+
+          {isLoading && (
+            <div style={{
+              display: 'flex', gap: '6px', alignItems: 'center',
+              padding: '10px 14px', borderRadius: '14px 14px 14px 4px',
+              background: 'rgba(255,255,255,0.03)',
+              alignSelf: 'flex-start', maxWidth: '85%',
+            }}>
+              <span style={{ animation: 'pulse-glow 1.5s ease-in-out infinite', fontSize: '14px' }}>🤖</span>
+              <div style={{ display: 'flex', gap: '4px' }}>
+                {[0, 1, 2].map((d) => (
+                  <span
+                    key={d}
+                    style={{
+                      width: '5px', height: '5px', borderRadius: '50%',
+                      background: 'rgba(139,92,246,0.5)',
+                      animation: `pulse-glow 1s ease-in-out ${d * 0.2}s infinite`,
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div ref={messagesEndRef} />
         </div>
-      )}
+
+        {/* Input */}
+        <div
+          style={{
+            padding: '12px 14px',
+            borderTop: '1px solid rgba(255,255,255,0.06)',
+            display: 'flex',
+            gap: '8px',
+            alignItems: 'center',
+          }}
+        >
+          <input
+            ref={inputRef}
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder={hasApiKey() ? 'Ask about your notes...' : 'Search your notes...'}
+            disabled={isLoading}
+            style={{
+              flex: 1,
+              padding: '10px 14px',
+              borderRadius: '12px',
+              border: '1px solid rgba(255,255,255,0.08)',
+              background: 'rgba(255,255,255,0.04)',
+              color: '#e2e8f0',
+              fontSize: '13px',
+              outline: 'none',
+            }}
+          />
+          <button
+            onClick={sendMessage}
+            disabled={isLoading || !input.trim()}
+            style={{
+              width: '36px', height: '36px', borderRadius: '10px',
+              border: 'none',
+              background: input.trim() ? '#8b5cf6' : 'rgba(255,255,255,0.05)',
+              color: input.trim() ? '#fff' : 'rgba(255,255,255,0.2)',
+              cursor: input.trim() ? 'pointer' : 'default',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: '16px', flexShrink: 0,
+              transition: 'all 0.15s',
+            }}
+          >
+            ↑
+          </button>
+        </div>
+
+        {error && (
+          <div style={{
+            padding: '6px 14px', fontSize: '10px', color: '#ef4444',
+            background: 'rgba(239,68,68,0.05)', borderTop: '1px solid rgba(239,68,68,0.1)',
+          }}>
+            {error}
+          </div>
+        )}
+      </div>
+    )}
     </>
   );
 }

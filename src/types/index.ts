@@ -61,6 +61,7 @@ export interface Note {
     imageOCRConfidence?: number;
     source?: string;
   };
+  imageUrl?: string;
 }
 
 export interface Category {

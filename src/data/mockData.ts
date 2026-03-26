@@ -201,6 +201,13 @@ export function generateMockNotes(count: number = 60): Note[] {
     for (let i = 0; i < screenshots.length; i++) {
       const ss = screenshots[i];
       noteIndex++;
+      
+      // Assign demo images to matching pillars
+      let imageUrl: string | undefined;
+      if (pillar === 'health' && (i === 0 || i === 3)) imageUrl = '/demo/health.png';
+      if (pillar === 'wealth' && (i === 1 || i === 4)) imageUrl = '/demo/wealth.png';
+      if (pillar === 'wisdom' && (i === 2 || i === 5)) imageUrl = '/demo/wisdom.png';
+
       notes.push({
         id: `screenshot-${pillar}-${i + 1}`,
         title: ss.title,
@@ -217,6 +224,7 @@ export function generateMockNotes(count: number = 60): Note[] {
           wordCount: ss.content.split(' ').length,
           source: 'screenshot',
         },
+        imageUrl,
       });
     }
   }
